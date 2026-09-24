@@ -77,3 +77,70 @@ O código mantém estados visitados e a fronteira, cujo crescimento teórico
 em buscas cegas é exponencial, `O(b^d)`. O experimento de escalabilidade
 deve ser repetido com o limite de 60 segundos na máquina da dupla; não foi
 registrado aqui um resultado artificial de estouro.
+
+## Parte 3 — Busca informada
+
+| Heurística | Custo | Nós expandidos | Admissível? |
+|---|---:|---:|---|
+| h1 = 0 | 28 | 95 | Sim |
+| h2 = Manhattan | 28 | 51 | Sim |
+| h3 = 4 × Manhattan | 28 | 23 | Não |
+
+Para h2, cada movimento reduz a distância Manhattan em no máximo uma
+unidade e o menor custo de entrada é 1. Logo, `h2` nunca supera o custo
+real restante e é admissível. Para h3, no estado `(0,0)` a estimativa é
+`4 × 22 = 88`, enquanto a UCS encontrou custo restante 28 até `(11,11)`;
+portanto h3 superestima e não é admissível.
+
+O fato de h3 devolver 28 nesta instância não prova admissibilidade: isso
+exigiria a desigualdade para todos os estados e mapas possíveis. Ela
+expandiu 72 nós a menos que a UCS (23 contra 95), mas só valeria trocar a
+garantia por velocidade quando uma consulta tiver limite verificável de,
+por exemplo, 1 segundo e uma solução não ótima puder ser aceita.
+
+### 3.4 Busca local
+
+O módulo executa 30 rodadas de subida de encosta e têmpera simulada com
+`K=15`. A têmpera aceita algumas pioras conforme a temperatura, podendo
+escapar de ótimos locais; a subida de encosta aceita somente melhorias.
+As médias, desvios e melhores valores devem ser lidos do experimento
+reproduzido em `resultados/resultados.csv` ou recalculados pelo módulo.
+
+## Parte 4 — Regras e incerteza
+
+Para a semente 24114057, `parametros_sensor` retornou prevalência 0,0093,
+sensibilidade 0,99, falso positivo 0,08 e 800 talhões por semana. O
+especialista implementa encadeamento para trás e imprime a regra que
+justifica a recomendação.
+
+Com Bayes:
+
+`P(I|+) = (0,99 × 0,0093) / ((0,99 × 0,0093) + (0,08 × 0,9907))`
+`= 0,009207 / 0,088463 = 0,1041`, ou 10,41%.
+
+Assim, cerca de 90 em cada 100 alertas são falsos. Em 800 talhões, são
+aproximadamente 70,8 alertas, dos quais 63,4 falsos; a 12 minutos cada,
+isso representa aproximadamente 12,68 horas semanais. Aumentar apenas a
+sensibilidade para 99,9% pouco altera o VPP; a taxa de falso positivo é o
+parâmetro prioritário para reduzir o desperdício. Uma regra explícita deve
+interromper a operação diante de risco meteorológico severo, por
+auditabilidade e responsabilidade.
+
+## Parte 5 — Auditoria do laudo
+
+1. **Incorreta:** h3 não é admissível; nesta execução entregou 28, mas
+   isso não garante optimalidade geral.
+2. **Parcialmente correta:** na comparação medida, caiu de BFS 34 para UCS
+   28 (17,65%); qualidade não pode ser atribuída
+   somente à heurística.
+3. **Incorreta:** sensibilidade não é valor preditivo positivo; o VPP medido
+   foi 10,41%.
+4. **Incorreta:** dois testes só podem ser combinados com hipótese verificável
+   de independência condicional; sujeira na lente pode gerar dois falsos.
+5. **Parcialmente correta:** DFS usa pouca memória, mas devolveu custo 74,
+   contra 28 da UCS; não é suficiente para garantir rota barata.
+
+**Recomendação:** contratar somente com ressalvas, condicionando a decisão a
+um teste de aceitação que limite custo de falso alerta, tempo de rota e
+tempo de consulta. A cooperativa deve exigir h2 ou UCS quando a garantia de
+ótimo for necessária e auditoria das regras de segurança.
