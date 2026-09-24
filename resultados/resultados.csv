@@ -1,0 +1,7 @@
+estrategia,heuristica,custo,passos,nos_expandidos,fronteira_max,tempo_ms
+BFS,,55,22,116,13,0.391
+DFS,,135,66,69,44,0.162
+UCS,,34,22,112,23,0.447
+A*,h1,34,22,112,23,0.32
+A*,h2,34,22,93,26,0.265
+A*,h3,34,22,25,20,0.081
