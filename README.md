@@ -1,7 +1,7 @@
-# Caatinga.AI — Sprint 1
+# Caatinga.AI
 
 **Disciplina:** Inteligência Artificial - Prof. Ronierison Maciel - UniRios - 2026.2
-**Dupla:** [SEU NOME AQUI] e [NOME DA SUA DUPLA AQUI]
+**Dupla:** Raniely Sabrina 241.14.057 e Kaynã Filipe 241.14.038
 **Semente usada nos artefatos versionados:** `24114057`
 
 O projeto gera deterministicamente um pomar 12 × 12 a partir da matrícula de um dos alunos, encontra uma rota entre `(0, 0)` e `(11, 11)` e compara BFS, DFS, UCS e A* com três heurísticas. Também contém os módulos de busca local, especialista explicável (Encadeamento para Trás) e cálculos de Teorema de Bayes referentes ao Sprint 1.
