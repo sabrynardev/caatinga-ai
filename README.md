@@ -1,4 +1,4 @@
-# Caatinga.AI — Sprint 1
+# Caatinga.AI
 
 **Disciplina:** Inteligência Artificial - Prof. Ronierison Maciel - UniRios - 2026.2
 **Dupla:** [SEU NOME AQUI] e [NOME DA SUA DUPLA AQUI]
