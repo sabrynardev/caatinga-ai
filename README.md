@@ -1,7 +1,7 @@
 # Caatinga.AI — Sprint 1
 
-**Disciplina:** Inteligência Artificial — UniRios 2026.2  
-**Dupla:** [preencher nomes completos e matrículas]  
+**Disciplina:** Inteligência Artificial
+**Dupla:**   
 **Semente usada nos artefatos versionados:** `20231045` (matrícula fictícia de aferição)
 
 O projeto gera deterministicamente um pomar 12 × 12 a partir da matrícula,
