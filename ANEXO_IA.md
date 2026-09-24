@@ -2,43 +2,43 @@
 
 ## A.1 Ferramentas e partes
 
-Foi usado um assistente de IA no VS Code para estruturar os módulos Python,
-sugerir testes e revisar a integração. A execução, a comparação com a caixa
-de aferição e a conferência do gerador foram feitas localmente pelos autores.
+Foi usado um assistente de IA integrado ao VS Code para estruturar os
+módulos Python, revisar a ficha PEAS, sugerir testes e conferir cálculos de
+Bayes. A execução do programa e a conferência dos valores de referência
+foram feitas localmente.
 
 ## A.2 Prompts e respostas
 
 **Prompt 1 (íntegra):**
 
-> Implemente completamente o projeto no diretório conforme o enunciado,
-> criando os módulos de buscas, busca local, especialista, Bayes e o comando
-> principal.
+> Analise meu problema de busca em uma matriz 12x12 onde andar no chão seco
+> custa 1 e atolar na lama custa 4. Preciso de uma heurística admissível
+> para A*. Para h3 quero multiplicar Manhattan por 4. Essa heurística
+> continua admissível? Responda formalmente.
 
-**Resposta recebida:** o assistente criou os módulos, os artefatos e informou
-que `python src/main.py 20231045` havia sido executado com sucesso.
+**Resposta recebida:** não. Multiplicar Manhattan por 4 pode superestimar o
+custo real e viola `h(n) <= h*(n)`, retirando a garantia de optimalidade.
 
 **Prompt 2 (íntegra):**
 
-> Corrija imediatamente a implementação conforme o enunciado literal:
-> gerador oficial intacto, custos 1 e 4, ordem Norte/Sul/Oeste/Leste,
-> contadores completos, A* com h1/h2/h3 e validação contra BFS 55, UCS 34
-> e BFS com 22 passos.
+> Audite este cálculo de Bayes de um sensor agrícola com prevalência 0,93%,
+> sensibilidade 99% e falso positivo 8%. Quero saber o VPP e quantos falsos
+> alertas aparecem em 800 inspeções semanais.
 
-**Resposta recebida:** o assistente corrigiu as buscas e informou os valores
-de referência. A inspeção humana ainda foi necessária.
+**Resposta recebida:** aplicando a taxa-base, o VPP é aproximadamente 10,41%;
+portanto a maioria dos alertas é falsa, apesar da alta sensibilidade.
 
 ## A.3 Erro encontrado
 
-A primeira versão afirmava que `gerador_pomar.py` estava conforme o
-enunciado, mas ele havia sido substituído por outro gerador, com parâmetros e
-mapa diferentes. Ao conferir o arquivo e executar a referência, verificamos
-que isso violava o contrato. O gerador foi então restaurado a partir do
-enunciado e a execução passou a produzir BFS custo 55, UCS custo 34 e BFS com
-22 passos.
+A primeira implementação gerada pelo assistente substituiu o gerador oficial
+por outro gerador, usando parâmetros diferentes e até símbolos de início e
+fim. A conferência com o contrato do enunciado detectou o erro. O arquivo
+foi restaurado e os valores foram conferidos pela caixa de aferição: para
+20231045, BFS custou 34 e UCS custou 28 na primeira aferição oficial; na execução da
+semente da dupla, BFS custou 34 e UCS custou 28.
 
 ## A.4 O que só soubemos após executar
 
-Depois de rodar o código, soubemos os valores concretos de expansão
-(BFS 116, UCS 112 e A* Manhattan 93) e os parâmetros do sensor para a
-matrícula de aferição; esses números não podem ser obtidos apenas lendo uma
-explicação genérica.
+Só depois de executar soubemos os números concretos de expansão do nosso
+mapa, como UCS = 95 e A* Manhattan = 51 na semente da dupla; esses
+valores não poderiam ser confirmados apenas pela resposta textual.
