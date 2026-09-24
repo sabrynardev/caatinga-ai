@@ -5,6 +5,7 @@ from buscas import bfs, dfs, ucs, astar, h1, h2, h3
 from busca_local import executar_experimentos
 from bayes import probabilidade_praga
 from especialista import recomendar
+from gerador_pomar import gerar_pomar, parametros_sensor
 
 def main(matricula):
     raiz=os.path.dirname(os.path.dirname(os.path.abspath(__file__))); saida=os.path.join(raiz,"resultados")
@@ -35,8 +36,13 @@ def main(matricula):
     except ImportError:
         open(os.path.join(saida,"grafico.png"),"wb").write(b"")
     locais=executar_experimentos(30,seed=int(matricula))
+    sensor = parametros_sensor(int(matricula))
+    bayes_res = probabilidade_praga(prior_praga=sensor['prevalencia'], sensibilidade=sensor['sensibilidade'], falso_positivo=sensor['taxa_falso_positivo'])
+    
     print("Matrícula:",matricula,"\nResultados:",os.path.join(saida,"resultados.csv"))
-    print("Bayes:",probabilidade_praga(),"Regras:",recomendar({"solo_seco","temperatura_alta"}))
+    print("Parâmetros do Sensor (Semente):", sensor)
+    print("Bayes (Posterior P(I|Pos)):", round(bayes_res['posterior'], 4))
+    print("Regras Exemplo:",recomendar({"umidade_alta","solo_encharcado"}))
     print("Experimentos locais:",len(locais))
     return linhas
 
