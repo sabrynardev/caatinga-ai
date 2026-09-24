@@ -1,29 +1,79 @@
 # Relatório — Sprint 1
 
-**Aluno(s):** [NOME — MATRÍCULA]  
-**Disciplina/turma:** [PREENCHER]
+**Alunos:** Raniely Sabrina — 24114057; Kaynã Filipe — 24114038  
+**Disciplina:** Inteligência Artificial — Prof. Ronierison Maciel — UniRios — 2026.2  
+**Semente dos artefatos versionados:** 20231045 (matrícula fictícia de aferição)
 
-## Objetivo e método
+## Parte 1 — O agente antes do código
 
-O programa gera uma grade 12x12 de pomar com semente derivada da matrícula.
-Obstáculos são `#`; entrar em `.` custa 1 e entrar em `~` custa 4. Os
-vizinhos são visitados em ordem Norte, Sul, Oeste, Leste. O CSV compara BFS,
-DFS, UCS e A* com h1 (zero), h2 (Manhattan) e h3 (4 vezes Manhattan), incluindo
-passos, custo, nós expandidos e fronteira máxima.
+### 1.1 Ficha PEAS
 
-A busca local usa vizinhança de **K=15** candidatos na subida de encosta e
-têmpera simulada. São realizadas 30 execuções independentes, com sementes
-reprodutíveis. O especialista usa encadeamento para trás e devolve a
-explicação da regra disparada. O módulo Bayes calcula a probabilidade
-posterior de praga, explicitando sensibilidade e falso positivo.
+- **Desempenho:** custo da rota em unidades e horas de inspeção humana poupadas por semana.
+- **Ambiente:** pomar de manga em grade 12 × 12, com carreador (`.`), solo encharcado (`~`) e bloqueio (`#`).
+- **Atuadores:** deslocamento nas quatro direções ortogonais.
+- **Sensores:** mapa/posição e sensor óptico de suspeita de pragas.
 
-## Resultados
+### 1.2 Classificação do ambiente
 
-Na validação com `python src/main.py 20231045`, BFS produziu custo 55 e 22
-passos; UCS produziu custo 34. As expansões e a fronteira máxima são
-registradas no CSV e o gráfico representa nós expandidos.
+| Dimensão | Classificação | Evidência ou ressalva |
+|---|---|---|
+| Observável | Parcialmente observável para pragas | O sensor aponta suspeitos, mas não revela diretamente a infestação real; para a rota, o mapa gerado é observável. |
+| Determinístico | Determinístico | O custo é a soma dos custos dos talhões de entrada e a transição é definida pela ação. |
+| Episódico/sequencial | Sequencial | A rota é uma sequência de movimentos e o estado atual afeta os próximos movimentos. |
+| Estático | Discutível; assumido estático | O enunciado não informa se chuva ou irrigação alteram o terreno durante a execução. |
+| Discreto | Discreto | O pomar é uma grade e os movimentos são ortogonais. |
+| Agente único | Agente único | O cenário descreve um único agente percorrendo o pomar. |
 
-## Limitações
+As dimensões discutíveis são observabilidade (se o foco for apenas a rota, o
+mapa é totalmente observável) e estaticidade (faltam informações sobre
+mudanças meteorológicas durante a patrulha).
 
-O modelo é acadêmico: terreno, custos e regras são simplificações e não
-constituem recomendação agronômica real.
+### 1.3 Tipo de agente
+
+Escolhemos agente baseado em utilidade: ele precisa chegar ao destino, mas
+deve preferir entre rotas possíveis aquela de menor custo, considerando que
+entrar em `~` custa quatro vezes mais que entrar em `.`.
+
+### 1.4 Métrica perversa
+
+Maximizar a quantidade de talhões apontados como suspeitos pareceria uma
+medida de cobertura, mas faria o agente marcar todos os 144 talhões,
+gerando inspeções desnecessárias. A correção é maximizar verdadeiros
+positivos com penalidade mensurável para falsos positivos e custo de
+inspeção.
+
+## Parte 2 — Formulação e busca cega
+
+### 2.1 Componentes
+
+- Estado inicial: `(0, 0)`.
+- Ações: Norte, Sul, Oeste e Leste.
+- Transição: mover para o vizinho dentro da grade que não seja `#`.
+- Objetivo: alcançar `(11, 11)`.
+- Custo: soma de `1` ou `4` de cada talhão no qual o agente entra.
+
+O espaço bruto tem `12 × 12 = 144` estados; estados bloqueados não são
+alcançáveis. A execução da semente de aferição possui 113 células livres.
+
+### 2.2 Resultados medidos
+
+Ordem dos vizinhos: **Norte, Sul, Oeste, Leste**.
+
+| Estratégia | Custo | Passos | Expandidos | Fronteira máxima | Ótima em custo? |
+|---|---:|---:|---:|---:|---|
+| BFS | 55 | 22 | 116 | 13 | Não |
+| DFS | 135 | 66 | 69 | 44 | Não |
+| UCS | 34 | 22 | 112 | 23 | Sim |
+
+### 2.3
+
+A BFS minimiza o número de passos, não a soma dos custos. A hipótese da
+Aula 03 que foi violada é a de custo uniforme por passo: `.` custa 1 e `~`
+custa 4. Portanto, uma rota com menos passos pode ser mais cara.
+
+### 2.4
+
+O código mantém estados visitados e a fronteira, cujo crescimento teórico
+em buscas cegas é exponencial, `O(b^d)`. O experimento de escalabilidade
+deve ser repetido com o limite de 60 segundos na máquina da dupla; não foi
+registrado aqui um resultado artificial de estouro.
