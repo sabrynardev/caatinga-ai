@@ -1,6 +1,6 @@
 # Relatório — Sprint 1
 
-**Aluno(s):** [SEU NOME] — 24114057  
+**Aluno(s):** Raniely Sabrina — 24114057  , Kaynã Filipe — 24114038
 **Disciplina/turma:** Inteligência Artificial - Prof. Ronierison Maciel - UniRios - 2026.2
 
 ## Parte 1 - O agente antes do código
